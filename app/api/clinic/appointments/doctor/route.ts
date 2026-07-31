@@ -1,4 +1,4 @@
-п»їimport { NextRequest, NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/shared/lib/prisma'
 import { cookies } from 'next/headers'
 import jwt from 'jsonwebtoken'
@@ -13,20 +13,20 @@ function getUserFromToken(token: string) {
 
 export async function GET(req: NextRequest) {
   try {
-    const cookieStore = cookies()
+    const cookieStore = await cookies()
     const token = cookieStore.get('token')?.value
     if (!token) {
-      return NextResponse.json({ error: 'РќРµРѕР±С…РѕРґРёРјР° Р°РІС‚РѕСЂРёР·Р°С†РёСЏ' }, { status: 401 })
+      return NextResponse.json({ error: 'Необходима авторизация' }, { status: 401 })
     }
     const user = getUserFromToken(token)
     if (!user || user.role !== 'doctor') {
-      return NextResponse.json({ error: 'Р”РѕСЃС‚СѓРї С‚РѕР»СЊРєРѕ РґР»СЏ РІСЂР°С‡РµР№' }, { status: 403 })
+      return NextResponse.json({ error: 'Доступ только для врачей' }, { status: 403 })
     }
     const doctor = await prisma.doctor.findUnique({
       where: { userId: user.userId },
     })
     if (!doctor) {
-      return NextResponse.json({ error: 'РљР°СЂС‚РѕС‡РєР° РІСЂР°С‡Р° РЅРµ РЅР°Р№РґРµРЅР°' }, { status: 404 })
+      return NextResponse.json({ error: 'Карточка врача не найдена' }, { status: 404 })
     }
     const appointments = await prisma.appointment.findMany({
       where: { doctorId: doctor.id },
@@ -39,6 +39,7 @@ export async function GET(req: NextRequest) {
     })
     return NextResponse.json(appointments)
   } catch (error) {
-    return NextResponse.json({ error: 'РћС€РёР±РєР° Р·Р°РіСЂСѓР·РєРё Р·Р°РїРёСЃРµР№' }, { status: 500 })
+    return NextResponse.json({ error: 'Ошибка загрузки записей' }, { status: 500 })
   }
 }
+
