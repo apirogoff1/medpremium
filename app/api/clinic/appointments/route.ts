@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
     if (!service) {
       return NextResponse.json({ error: 'Service not found' }, { status: 404 })
     }
-    const appointment = await prisma.$	ransaction(async (tx) => {
+    const appointment = await prisma.$transaction(async (tx: any) => {
       await tx.timeSlot.update({
         where: { id: data.timeSlotId },
         data: { status: 'BOOKED' },
