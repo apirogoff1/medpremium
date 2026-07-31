@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+п»їimport { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/shared/lib/prisma'
 import { cookies } from 'next/headers'
 import jwt from 'jsonwebtoken'
@@ -16,17 +16,17 @@ export async function GET(req: NextRequest) {
     const cookieStore = await cookies()
     const token = cookieStore.get('token')?.value
     if (!token) {
-      return NextResponse.json({ error: 'Необходима авторизация' }, { status: 401 })
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
     const user = getUserFromToken(token)
     if (!user || user.role !== 'doctor') {
-      return NextResponse.json({ error: 'Доступ только для врачей' }, { status: 403 })
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
     const doctor = await prisma.doctor.findUnique({
       where: { userId: user.userId },
     })
     if (!doctor) {
-      return NextResponse.json({ error: 'Карточка врача не найдена' }, { status: 404 })
+      return NextResponse.json({ error: 'Doctor not found' }, { status: 404 })
     }
     const appointments = await prisma.appointment.findMany({
       where: { doctorId: doctor.id },
@@ -39,7 +39,6 @@ export async function GET(req: NextRequest) {
     })
     return NextResponse.json(appointments)
   } catch (error) {
-    return NextResponse.json({ error: 'Ошибка загрузки записей' }, { status: 500 })
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
-
