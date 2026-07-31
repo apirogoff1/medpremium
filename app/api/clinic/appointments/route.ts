@@ -17,8 +17,6 @@ const appointmentSchema = z.object({
   doctorId: z.string().min(1),
   serviceId: z.string().min(1),
   timeSlotId: z.string().min(1),
-  patientName: z.string().min(2),
-  patientPhone: z.string().min(10),
   comment: z.string().max(500).optional(),
 })
 
@@ -41,15 +39,15 @@ export async function POST(req: NextRequest) {
       where: { id: data.timeSlotId },
     })
     if (!slot || slot.status !== 'AVAILABLE') {
-      return NextResponse.json({ error: 'Слот недоступен' }, { status: 400 })
+      return NextResponse.json({ error: 'Slot not available' }, { status: 400 })
     }
     const service = await prisma.service.findUnique({
       where: { id: data.serviceId },
     })
     if (!service) {
-      return NextResponse.json({ error: 'Услуга не найдена' }, { status: 404 })
+      return NextResponse.json({ error: 'Service not found' }, { status: 404 })
     }
-    const appointment = await prisma.$transaction(async (tx) => {
+    const appointment = await prisma.$	ransaction(async (tx) => {
       await tx.timeSlot.update({
         where: { id: data.timeSlotId },
         data: { status: 'BOOKED' },
@@ -60,8 +58,6 @@ export async function POST(req: NextRequest) {
           doctorId: data.doctorId,
           serviceId: data.serviceId,
           timeSlotId: data.timeSlotId,
-          patientName: data.patientName,
-          patientPhone: data.patientPhone,
           comment: data.comment,
           totalAmount: service.price,
           status: 'PENDING',
@@ -76,12 +72,8 @@ export async function POST(req: NextRequest) {
       })
       return newAppointment
     })
-
-    // Отправляем email уведомление
     try {
       await sendAppointmentConfirmation({
-        patientName: appointment.patientName,
-        patientPhone: appointment.patientPhone,
         doctorName: appointment.doctor.user.name,
         serviceName: appointment.service.name,
         date: new Date(appointment.timeSlot.startTime).toLocaleDateString('ru-RU'),
@@ -89,13 +81,11 @@ export async function POST(req: NextRequest) {
         totalAmount: Number(appointment.totalAmount),
       })
     } catch (emailError) {
-      console.error('Ошибка отправки email:', emailError)
-      // Не ломаем ответ если email не ушёл
+      console.error('Email error:', emailError)
     }
-
     return NextResponse.json(appointment, { status: 201 })
   } catch (error) {
-    console.error('Ошибка создания записи:', error)
-    return NextResponse.json({ error: 'Ошибка создания записи' }, { status: 500 })
+    console.error('Appointment error:', error)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
