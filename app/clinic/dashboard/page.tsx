@@ -1,0 +1,171 @@
+'use client'
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { useAuth } from '@/hooks'
+import { useMyAppointments } from '@/features/clinic/api'
+
+export default function ClinicDashboardPage() {
+  const { user, isAuthenticated } = useAuth()
+  const router = useRouter()
+  const { data: appointments, isLoading } = useMyAppointments()
+  const [hydrated, setHydrated] = useState(false)
+
+  useEffect(() => {
+    setHydrated(true)
+  }, [])
+
+  useEffect(() => {
+    if (hydrated && !isAuthenticated) {
+      router.push('/login')
+    }
+  }, [hydrated, isAuthenticated, router])
+
+  if (!hydrated || isLoading) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="animate-pulse space-y-4">
+          <div className="h-8 bg-gray-200 rounded w-1/3" />
+          <div className="h-4 bg-gray-200 rounded w-1/4" />
+          <div className="grid grid-cols-3 gap-4 mt-8">
+            <div className="h-24 bg-gray-200 rounded-xl" />
+            <div className="h-24 bg-gray-200 rounded-xl" />
+            <div className="h-24 bg-gray-200 rounded-xl" />
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (!isAuthenticated || !user) return null
+
+  const upcoming = appointments?.filter((a: { status: string }) =>
+    a.status === 'SCHEDULED'
+  ) ?? []
+
+  const past = appointments?.filter((a: { status: string }) =>
+    a.status === 'COMPLETED'
+  ) ?? []
+
+  return (
+    <div style={{ minHeight: '100vh' }}>
+
+      {/* БЛОК 1 — герой */}
+      <div style={{ background: 'linear-gradient(90deg,#27384E 0%,#4F5F76 100%)', position: 'relative', overflow: 'hidden', height: '280px', display: 'flex', alignItems: 'center' }}>
+        <div style={{ position: 'absolute', top: '-60px', left: '-60px', width: '320px', height: '320px', borderRadius: '50%', background: 'rgba(255,255,255,.08)', filter: 'blur(40px)' }} />
+        <div style={{ position: 'absolute', bottom: '-80px', right: '10%', width: '380px', height: '380px', borderRadius: '50%', background: 'rgba(255,255,255,.06)', filter: 'blur(50px)' }} />
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
+          <h1 style={{ fontFamily: 'var(--font-playfair)', fontSize: '56px', fontWeight: 800, color: '#ffffff', lineHeight: 1.1, textShadow: '0 2px 8px rgba(0,0,0,.35)' }}>Личный кабинет</h1>
+          <p style={{ fontSize: '20px', color: 'rgba(255,255,255,.85)', marginTop: '10px' }}>Добро пожаловать, {user.name}</p>
+        </div>
+      </div>
+
+      {/* БЛОК 2 — статистика */}
+      <div style={{ background: '#D8E4F0' }}>
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8" style={{ paddingTop: '48px', paddingBottom: '48px' }}>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <div style={{ textAlign: 'center', padding: '8px 0' }}>
+              <p style={{ fontSize: '14px', color: '#4F5F76', fontWeight: 600, marginBottom: '8px' }}>Предстоящие записи</p>
+              <p style={{ fontFamily: 'var(--font-playfair)', fontSize: '40px', fontWeight: 800, color: '#27384E' }}>{upcoming.length}</p>
+              <p style={{ fontSize: '13px', color: '#64748B', marginTop: '4px' }}>{upcoming.length === 0 ? 'На данный момент записей нет' : 'Ожидают приёма'}</p>
+            </div>
+            <div style={{ textAlign: 'center', padding: '8px 0', borderLeft: '1px solid rgba(94,118,152,.25)', borderRight: '1px solid rgba(94,118,152,.25)' }}>
+              <p style={{ fontSize: '14px', color: '#4F5F76', fontWeight: 600, marginBottom: '8px' }}>Завершённые приёмы</p>
+              <p style={{ fontFamily: 'var(--font-playfair)', fontSize: '40px', fontWeight: 800, color: '#27384E' }}>{past.length}</p>
+              <p style={{ fontSize: '13px', color: '#64748B', marginTop: '4px' }}>{past.length === 0 ? 'История пока пуста' : 'Пройдено визитов'}</p>
+            </div>
+            <div style={{ textAlign: 'center', padding: '8px 0' }}>
+              <p style={{ fontSize: '14px', color: '#4F5F76', fontWeight: 600, marginBottom: '8px' }}>Всего записей</p>
+              <p style={{ fontFamily: 'var(--font-playfair)', fontSize: '40px', fontWeight: 800, color: '#27384E' }}>{appointments?.length ?? 0}</p>
+              <p style={{ fontSize: '13px', color: '#64748B', marginTop: '4px' }}>За всё время</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* БЛОК 3 — карточки и ближайший приём */}
+      <div style={{ background: '#EFF4F9' }}>
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8" style={{ paddingTop: '48px', paddingBottom: '64px' }}>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6" style={{ marginBottom: '24px' }}>
+            <Link
+              href="/clinic/booking"
+              className="group"
+              style={{ background: 'linear-gradient(135deg,#526C90,#415B7E)', borderRadius: '24px', height: '220px', padding: '32px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', transition: '.25s ease', boxShadow: '0 18px 45px rgba(40,55,80,.18)' }}
+            >
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+                <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="4" width="18" height="18" rx="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" />
+                </svg>
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.7)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="group-hover:translate-x-1" style={{ transition: '.25s ease' }}>
+                  <path d="M5 12h14" /><path d="M12 5l7 7-7 7" />
+                </svg>
+              </div>
+              <div>
+                <h2 style={{ fontFamily: 'var(--font-playfair)', fontSize: '24px', fontWeight: 700, color: '#ffffff', marginBottom: '6px' }}>Записаться на приём</h2>
+                <p style={{ fontSize: '15px', color: 'rgba(255,255,255,.8)' }}>Выберите врача и удобное время</p>
+              </div>
+            </Link>
+
+            <Link
+              href="/clinic/dashboard/appointments"
+              className="group"
+              style={{ background: 'rgba(255,255,255,.85)', backdropFilter: 'blur(18px)', borderRadius: '24px', height: '220px', padding: '32px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', transition: '.25s ease', boxShadow: '0 18px 45px rgba(40,55,80,.1)', border: '1px solid rgba(255,255,255,.6)' }}
+            >
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#4F5F76" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M3 3v18h18" /><path d="M18 17V9" /><path d="M13 17V5" /><path d="M8 17v-3" />
+                </svg>
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#5E7698" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="group-hover:translate-x-1" style={{ transition: '.25s ease' }}>
+                  <path d="M5 12h14" /><path d="M12 5l7 7-7 7" />
+                </svg>
+              </div>
+              <div>
+                <h2 style={{ fontFamily: 'var(--font-playfair)', fontSize: '24px', fontWeight: 700, color: '#27384E', marginBottom: '6px' }}>Мои записи</h2>
+                <p style={{ fontSize: '15px', color: '#4F5F76', fontWeight: 500 }}>История посещений и будущие приёмы</p>
+              </div>
+            </Link>
+          </div>
+
+          {upcoming.length > 0 && (
+            <div style={{ background: 'rgba(255,255,255,.85)', borderRadius: '22px', padding: '28px', marginBottom: '40px', boxShadow: '0 18px 45px rgba(40,55,80,.1)' }}>
+              <h2 style={{ fontSize: '17px', fontWeight: 700, color: '#27384E', marginBottom: '16px' }}>Ближайший приём</h2>
+              {(() => {
+                const next = upcoming[0]
+                return (
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                      <p style={{ fontWeight: 600, color: '#27384E' }}>{next.doctor?.name}</p>
+                      <p style={{ fontSize: '14px', color: '#5E7698' }}>{next.doctor?.specialization?.name}</p>
+                      <p style={{ fontSize: '14px', color: '#94A3B8', marginTop: '4px' }}>
+                        {new Date(next.timeSlot?.startTime).toLocaleString('ru-RU', {
+                          day: 'numeric',
+                          month: 'long',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
+                      </p>
+                    </div>
+                    <Link href="/clinic/dashboard/appointments" style={{ fontSize: '14px', fontWeight: 600, color: '#5E7698' }}>
+                      Подробнее →
+                    </Link>
+                  </div>
+                )
+              })()}
+            </div>
+          )}
+
+          <div style={{ background: 'linear-gradient(135deg,#4F5F76,#27384E)', borderRadius: '24px', padding: '48px', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', textAlign: 'center', gap: '24px', maxWidth: '560px', margin: '0 auto' }}>
+            <div>
+              <h3 style={{ fontFamily: 'var(--font-playfair)', fontSize: '24px', fontWeight: 700, color: '#ffffff', marginBottom: '8px' }}>Нужна помощь?</h3>
+              <p style={{ fontSize: '15px', color: 'rgba(255,255,255,.75)', marginBottom: '12px', maxWidth: '480px', margin: '0 auto' }}>Если возникли вопросы по записи, свяжитесь с администраторами.</p>
+              <p style={{ fontSize: '15px', color: 'rgba(255,255,255,.9)' }}>+7 (495) 555-55-55 · info@medpremium.ru</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  )
+}

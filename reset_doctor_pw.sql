@@ -1,0 +1,1 @@
+UPDATE "User" SET password = '$2b$10$iU0RblGTDBTWL7spAGwoFeq.NX0UEmr6m4PS.qkVoHQhjPWQThH5K' WHERE email = 'sokolov@medpremium.ru';

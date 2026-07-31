@@ -1,0 +1,1 @@
+SELECT u.email, u.name FROM "Doctor" d JOIN "User" u ON d."userId" = u.id ORDER BY u.name;

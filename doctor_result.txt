@@ -1,0 +1,29 @@
+           email           |               name               
+---------------------------+----------------------------------
+ belov@medpremium.ru       | Белов Даниил Валентинович
+ belyaev@medpremium.ru     | Беляев Павел Денисович
+ bogdanov@medpremium.ru    | Богданов Роман Фёдорович
+ vasilyeva@medpremium.ru   | Васильева Наталья Игоревна
+ vinogradova@medpremium.ru | Виноградова Ирина Константиновна
+ volkov@medpremium.ru      | Волков Сергей Николаевич
+ voronova@medpremium.ru    | Воронова Светлана Вадимовна
+ golubev@medpremium.ru     | Голубев Максим Юрьевич
+ zaytsev@medpremium.ru     | Зайцев Кирилл Станиславович
+ zakharova@medpremium.ru   | Захарова Елена Олеговна
+ kim@medpremium.ru         | Ким Андрей Олегович
+ kozlova@medpremium.ru     | Козлова Мария Сергеевна
+ komissarova@medpremium.ru | Комиссарова Алина Эдуардовна
+ kulikov@medpremium.ru     | Куликов Артём Геннадьевич
+ lebedeva@medpremium.ru    | Лебедева Анна Дмитриевна
+ levin@medpremium.ru       | Левин Дмитрий Робертович
+ morozov@medpremium.ru     | Морозов Владимир Борисович
+ novikova@medpremium.ru    | Новикова Ольга Александровна
+ popova@medpremium.ru      | Попова Елена Викторовна
+ sarkisyan@medpremium.ru   | Саркисян Юлия Артуровна
+ semyonova@medpremium.ru   | Семёнова Татьяна Олеговна
+ sokolov@medpremium.ru     | Соколов Игорь Михайлович
+ tarasova@medpremium.ru    | Тарасова Екатерина Робертовна
+ shtern@medpremium.ru      | Штерн Борис Львович
+ yudina@medpremium.ru      | Юдина Виктория Львовна
+(25 строк)
+

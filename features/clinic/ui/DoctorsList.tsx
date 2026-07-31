@@ -1,0 +1,196 @@
+'use client'
+import { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
+import Link from 'next/link'
+import Image from 'next/image'
+import { useDoctors, useSpecializations } from '../api'
+import { getProcessedPhoto } from '@/shared/utils'
+
+export function DoctorsList() {
+  const searchParams = useSearchParams()
+  const [search, setSearch] = useState('')
+  const [specializationSlug, setSpecializationSlug] = useState('')
+  const [lightbox, setLightbox] = useState<string | null>(null)
+
+  useEffect(() => {
+    const spec = searchParams.get('specialization')
+    setSpecializationSlug(spec ?? '')
+  }, [searchParams])
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setLightbox(null)
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [])
+
+  const { data: doctors, isLoading: loadingDoctors } = useDoctors({
+    search: search || undefined,
+    specializationSlug: specializationSlug || undefined,
+  })
+
+  const { data: specializations, isLoading: loadingSpecs } = useSpecializations()
+
+  return (
+    <div>
+      {lightbox && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center cursor-pointer p-4"
+          style={{background:'rgba(0,0,0,0.85)'}}
+          onClick={() => setLightbox(null)}
+        >
+          <div
+            className="relative w-2/3 aspect-[3/4] max-h-[80vh] rounded-2xl overflow-hidden shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Image src={lightbox} alt="Фото врача" fill className="object-cover object-top" />
+          </div>
+          <button
+            className="absolute top-6 right-8 text-white text-4xl font-bold hover:text-gray-300"
+            onClick={() => setLightbox(null)}
+          >
+            ×
+          </button>
+        </div>
+      )}
+
+      <div className="flex flex-col sm:flex-row gap-4 mb-8">
+        <input
+          type="text"
+          placeholder="Поиск по имени врача..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          style={{
+            flex: 1,
+            background: 'rgba(255,255,255,0.7)',
+            border: '1px solid rgba(74,96,128,0.2)',
+            borderRadius: '10px',
+            padding: '10px 16px',
+            fontSize: '14px',
+            color: '#2d3540',
+            outline: 'none',
+            backdropFilter: 'blur(12px)',
+          }}
+        />
+        <select
+          value={specializationSlug}
+          onChange={(e) => setSpecializationSlug(e.target.value)}
+          style={{
+            background: 'rgba(255,255,255,0.7)',
+            border: '1px solid rgba(74,96,128,0.2)',
+            borderRadius: '10px',
+            padding: '10px 16px',
+            fontSize: '14px',
+            color: '#2d3540',
+            outline: 'none',
+            backdropFilter: 'blur(12px)',
+          }}
+        >
+          <option value="" style={{background:'#ffffff',color:'#2d3540'}}>Все специализации</option>
+          {!loadingSpecs && specializations?.map((spec: { id: string; slug: string; name: string }) => (
+            <option key={spec.id} value={spec.slug} style={{background:'#ffffff',color:'#2d3540'}}>{spec.name}</option>
+          ))}
+        </select>
+      </div>
+
+      {loadingDoctors ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="rounded-xl p-6 animate-pulse" style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)'}}>
+              <div className="w-16 h-16 rounded-full mb-4" style={{background:'rgba(255,255,255,0.08)'}} />
+              <div className="h-4 rounded w-3/4 mb-2" style={{background:'rgba(255,255,255,0.08)'}} />
+              <div className="h-3 rounded w-1/2" style={{background:'rgba(255,255,255,0.08)'}} />
+            </div>
+          ))}
+        </div>
+      ) : doctors?.length === 0 ? (
+        <div className="text-center py-16">
+          <p className="text-lg" style={{color:'rgba(234,240,246,0.7)'}}>Врачи не найдены</p>
+          <p className="text-sm mt-1" style={{color:'rgba(234,240,246,0.5)'}}>Попробуйте изменить параметры поиска</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {doctors?.map((doctor: {
+            id: string
+            photoUrl?: string
+            user: { name: string; email: string }
+            specialization: { name: string }
+            experienceYears: number
+            rating: number
+            reviewsCount: number
+          }) => {
+            const portraitUrl = getProcessedPhoto(doctor.photoUrl, 'portrait')
+            return (
+              <Link
+                key={doctor.id}
+                href={"/clinic/doctors/" + doctor.id}
+                className="block transition-all duration-300"
+                style={{
+                  background: 'rgba(255,255,255,0.04)',
+                  border: '1px solid rgba(255,255,255,0.08)',
+                  borderRadius: '16px',
+                  padding: '24px',
+                  textDecoration: 'none',
+                  backdropFilter: 'blur(16px)',
+                  WebkitBackdropFilter: 'blur(16px)',
+                }}
+                onMouseEnter={e => {
+                  const el = e.currentTarget as HTMLElement
+                  el.style.borderColor = 'rgba(33,160,225,0.35)'
+                  el.style.boxShadow = '0 12px 30px rgba(33,160,225,0.12)'
+                  el.style.transform = 'translateY(-4px)'
+                }}
+                onMouseLeave={e => {
+                  const el = e.currentTarget as HTMLElement
+                  el.style.borderColor = 'rgba(255,255,255,0.08)'
+                  el.style.boxShadow = 'none'
+                  el.style.transform = 'translateY(0)'
+                }}
+              >
+                <div
+                  className="w-full h-64 rounded-2xl mb-4 overflow-hidden flex items-center justify-center cursor-zoom-in"
+                  style={{background:'rgba(255,255,255,0.06)', position:'relative'}}
+                  onClick={(e) => {
+                    if (portraitUrl) {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      setLightbox(portraitUrl)
+                    }
+                  }}
+                >
+                  {portraitUrl ? (
+                    <Image
+                      src={portraitUrl}
+                      alt={doctor.user?.name ?? "Врач"}
+                      width={900}
+                      height={1200}
+                      className="w-full h-full object-cover object-top"
+                      style={{filter:'contrast(1.05) saturate(0.97) brightness(0.98)'}}
+                    />
+                  ) : (
+                    <span className="text-2xl font-bold" style={{color:'#21A0E1'}}>
+                      {doctor.user?.name?.charAt(0) ?? "?"}
+                    </span>
+                  )}
+                </div>
+                <h2 className="font-semibold mb-1" style={{color:'#1a3a5c'}}>{doctor.user?.name ?? "Врач"}</h2>
+                <p className="text-sm mb-3" style={{color:'#0055AA'}}>{doctor.specialization?.name}</p>
+                <div className="flex items-center gap-4 text-sm" style={{color:'#4a6080'}}>
+                  <span>Стаж {doctor.experienceYears} лет</span>
+                  <span className="flex items-center gap-1">
+                    <span style={{color:'#F5A623'}}>★</span>
+                    {doctor.rating?.toFixed(1) ?? "—"}
+                    <span style={{color:'#4a6080'}}>({doctor.reviewsCount ?? 0})</span>
+                  </span>
+                </div>
+              </Link>
+            )
+          })}
+        </div>
+      )}
+    </div>
+  )
+}
+
+
