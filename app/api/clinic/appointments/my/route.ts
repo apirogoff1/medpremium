@@ -13,18 +13,15 @@ function getUserFromToken(token: string) {
 
 export async function GET(req: NextRequest) {
   try {
-    const cookieStore = cookies()
+    const cookieStore = await cookies()
     const token = cookieStore.get('token')?.value
-
     if (!token) {
-      return NextResponse.json({ error: 'Необходима авторизация' }, { status: 401 })
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
-
     const user = getUserFromToken(token)
     if (!user) {
-      return NextResponse.json({ error: 'Недействительный токен' }, { status: 401 })
+      return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
     }
-
     const appointments = await prisma.appointment.findMany({
       where: { patientId: user.userId },
       include: {
@@ -41,9 +38,8 @@ export async function GET(req: NextRequest) {
       },
       orderBy: { createdAt: 'desc' },
     })
-
     return NextResponse.json(appointments)
   } catch (error) {
-    return NextResponse.json({ error: 'Ошибка загрузки записей' }, { status: 500 })
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
