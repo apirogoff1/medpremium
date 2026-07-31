@@ -20,7 +20,7 @@ function getUserFromToken(token: string) {
 export async function GET() {
   try {
     const reviews = await prisma.clinicReview.findMany({
-      where: { isPublished: true },
+      
       include: {
         user: { select: { name: true } },
       },
