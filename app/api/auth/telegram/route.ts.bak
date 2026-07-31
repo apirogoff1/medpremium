@@ -1,4 +1,4 @@
-﻿import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { createHmac } from "crypto";
 import { prisma } from "@/shared/lib/prisma";
 import { sign } from "jsonwebtoken";
@@ -34,6 +34,7 @@ export async function POST(req: NextRequest) {
     const jwtSecret = process.env.JWT_SECRET!;
     const token = sign({ userId: user.id, email: user.email }, jwtSecret, { expiresIn: "7d" });
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+    await prisma.session.create({ data: { userId: user.id, token, expiresAt } });
     const response = NextResponse.json({ success: true, user: { id: user.id, email: user.email, name: user.name } });
     response.cookies.set("auth-token", token, { httpOnly: true, secure: false, sameSite: "lax", expires: expiresAt });
     return response;
