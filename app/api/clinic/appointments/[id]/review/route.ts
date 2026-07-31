@@ -6,7 +6,7 @@ import { z } from 'zod'
 
 const reviewSchema = z.object({
   rating: z.number().min(1).max(5),
-  text: z.string().max(1000).optional(),
+  comment: z.string().max(1000).optional(),
 })
 
 function getUserFromToken(token: string) {
@@ -55,11 +55,10 @@ export async function POST(
     const review = await prisma.$transaction(async (tx) => {
       const newReview = await tx.doctorReview.create({
         data: {
-          patientId: user.userId,
           doctorId: appointment.doctorId,
           appointmentId: id,
           rating: data.rating,
-          text: data.text,
+          comment: data.comment,
         },
       })
       const reviews = await tx.doctorReview.aggregate({
@@ -71,7 +70,7 @@ export async function POST(
         where: { id: appointment.doctorId },
         data: {
           rating: reviews._avg.rating ?? 0,
-          reviewCount: reviews._count,
+          reviewsCount: reviews._count,
         },
       })
       return newReview
