@@ -1,10 +1,10 @@
-{
+﻿{
     "name": "medpremium",
     "version": "0.1.0",
     "private": true,
     "scripts": {
         "dev": "next dev -p 3001",
-        "build": "next build",
+        "build": "prisma generate && next build",
         "start": "next start",
         "lint": "next lint",
         "bot": "ts-node --project tsconfig.bot.json features/telegram/launch.ts"
