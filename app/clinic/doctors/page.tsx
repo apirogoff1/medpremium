@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { Suspense } from 'react'
 import { DoctorsList } from '@/features/clinic/ui/DoctorsList'
 export const metadata: Metadata = {
   title: 'Врачи',
@@ -19,7 +20,7 @@ export default function DoctorsPage() {
             25 специалистов высшей категории. Выберите врача и запишитесь онлайн.
           </p>
         </div>
-        <DoctorsList />
+        <Suspense fallback={<div>Loading...</div>}><DoctorsList /></Suspense>
       </div>
     </div>
   )
