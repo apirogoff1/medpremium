@@ -32,7 +32,7 @@ export async function PATCH(
     if (!appointment) {
       return NextResponse.json({ error: 'Not found' }, { status: 404 })
     }
-    if (appointment.patientId !== user.userId && user.role !== 'ADMIN') {
+    if (appointment.patientId !== user.userId && user.role !== 'admin') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
     if (appointment.status === 'CANCELLED' || appointment.status === 'COMPLETED') {

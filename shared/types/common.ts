@@ -1,6 +1,6 @@
 ﻿// Bazovye tipy dlya vsego proekta
 export type ID = string
-export type Role = 'PATIENT' | 'DOCTOR' | 'ADMIN'
+export type Role = 'patient' | 'doctor' | 'admin'
 export type Nullable<T> = T | null
 export type Optional<T> = T | undefined
 export type AsyncFn<T = void> = () => Promise<T>
