@@ -16,8 +16,8 @@ export const MAX_LIMIT = 100
 // Роли пользователей
 export const ROLES = {
   ADMIN: 'admin',
-  USER: 'user',
-  MODERATOR: 'moderator',
+  DOCTOR: 'doctor',
+  PATIENT: 'patient',
 } as const
 
 export type Role = typeof ROLES[keyof typeof ROLES]
