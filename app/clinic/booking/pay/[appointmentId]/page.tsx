@@ -59,3 +59,5 @@ export default function PaymentPage({ params }: { params: { appointmentId: strin
         </div>
       </div>
     </div>
+  )
+}
