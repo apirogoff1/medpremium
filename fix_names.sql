@@ -1,0 +1,26 @@
+
+UPDATE "User" SET name = 'Васильева Наталья Игоревна' WHERE email = 'vasilyeva@medpremium.ru';
+UPDATE "User" SET name = 'Козлова Мария Сергеевна' WHERE email = 'kozlova@medpremium.ru';
+UPDATE "User" SET name = 'Саркисян Юлия Артуровна' WHERE email = 'sarkisyan@medpremium.ru';
+UPDATE "User" SET name = 'Попова Елена Викторовна' WHERE email = 'popova@medpremium.ru';
+UPDATE "User" SET name = 'Штерн Борис Львович' WHERE email = 'shtern@medpremium.ru';
+UPDATE "User" SET name = 'Зайцев Кирилл Станиславович' WHERE email = 'zaytsev@medpremium.ru';
+UPDATE "User" SET name = 'Семёнова Татьяна Олеговна' WHERE email = 'semyonova@medpremium.ru';
+UPDATE "User" SET name = 'Волков Сергей Николаевич' WHERE email = 'volkov@medpremium.ru';
+UPDATE "User" SET name = 'Юдина Виктория Львовна' WHERE email = 'yudina@medpremium.ru';
+UPDATE "User" SET name = 'Ким Андрей Олегович' WHERE email = 'kim@medpremium.ru';
+UPDATE "User" SET name = 'Куликов Артём Геннадьевич' WHERE email = 'kulikov@medpremium.ru';
+UPDATE "User" SET name = 'Виноградова Ирина Константиновна' WHERE email = 'vinogradova@medpremium.ru';
+UPDATE "User" SET name = 'Морозов Владимир Борисович' WHERE email = 'morozov@medpremium.ru';
+UPDATE "User" SET name = 'Лебедева Анна Дмитриевна' WHERE email = 'lebedeva@medpremium.ru';
+UPDATE "User" SET name = 'Левин Дмитрий Робертович' WHERE email = 'levin@medpremium.ru';
+UPDATE "User" SET name = 'Голубев Максим Юрьевич' WHERE email = 'golubev@medpremium.ru';
+UPDATE "User" SET name = 'Беляев Павел Денисович' WHERE email = 'belyaev@medpremium.ru';
+UPDATE "User" SET name = 'Тарасова Екатерина Робертовна' WHERE email = 'tarasova@medpremium.ru';
+UPDATE "User" SET name = 'Соколов Игорь Михайлович' WHERE email = 'sokolov@medpremium.ru';
+UPDATE "User" SET name = 'Комиссарова Алина Эдуардовна' WHERE email = 'komissarova@medpremium.ru';
+UPDATE "User" SET name = 'Новикова Ольга Александровна' WHERE email = 'novikova@medpremium.ru';
+UPDATE "User" SET name = 'Воронова Светлана Вадимовна' WHERE email = 'voronova@medpremium.ru';
+UPDATE "User" SET name = 'Богданов Роман Фёдорович' WHERE email = 'bogdanov@medpremium.ru';
+UPDATE "User" SET name = 'Захарова Елена Олеговна' WHERE email = 'zakharova@medpremium.ru';
+UPDATE "User" SET name = 'Белов Даниил Валентинович' WHERE email = 'belov@medpremium.ru';

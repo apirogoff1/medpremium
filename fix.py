@@ -1,17 +1,12 @@
-content = open(r'app/clinic/booking/pay/[appointmentId]/page.tsx', encoding='utf-8').read()
-content = content.replace('Oplata prinjata!', 'Оплата принята!')
-content = content.replace('Vasha zapis podtverzhdena. Zhdjom vas v klinike!', 'Ваша запись подтверждена. Ждём вас в клинике!')
-content = content.replace('Lichnyj kabinet', 'Личный кабинет')
-content = content.replace('Zagruzka...', 'Загрузка...')
-content = content.replace('Oplata priema', 'Оплата приёма')
-content = content.replace("'Vrach'", "'Врач'")
-content = content.replace("'Usluga'", "'Услуга'")
-content = content.replace("'Data'", "'Дата'")
-content = content.replace("'Vremja'", "'Время'")
-content = content.replace("'Pacient'", "'Пациент'")
-content = content.replace('K oplate', 'К оплате')
-content = content.replace('rub', '₽')
-content = content.replace('Obrabotka...', 'Обработка платежа...')
-content = content.replace('Oplatit', 'Оплатить')
-open(r'app/clinic/booking/pay/[appointmentId]/page.tsx', 'w', encoding='utf-8').write(content)
-print('Done')
+content = """{
+  "crons": [
+    {
+      "path": "/api/cron/generate-slots",
+      "schedule": "0 3 * * *"
+    }
+  ]
+}
+"""
+open('vercel.json', 'w', encoding='utf-8').write(content)
+print('готово')
+print(open('vercel.json', encoding='utf-8').read())
