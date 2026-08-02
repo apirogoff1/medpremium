@@ -1,0 +1,1 @@
+const {PrismaClient}=require("@prisma/client");const p=new PrismaClient();p.service.findMany({take:6,include:{doctor:{include:{specialization:true}}}}).then(function(s){s.forEach(function(x){console.log(x.name,x.price,x.doctor.specialization.slug)})}).finally(function(){p.$disconnect()})

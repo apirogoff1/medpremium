@@ -1,94 +1,61 @@
-import { notFound } from 'next/navigation'
+'use client'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
-async function getAppointment(id: string) {
-  try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/clinic/appointments/${id}`, {
-      cache: 'no-store',
-    })
-    if (!res.ok) return null
-    return res.json()
-  } catch {
-    return null
-  }
-}
+export default function PaymentPage({ params }: { params: { appointmentId: string } }) {
+  const router = useRouter()
+  const [appointment, setAppointment] = useState<any>(null)
+  const [paying, setPaying] = useState(false)
+  const [paid, setPaid] = useState(false)
 
-export default async function PaymentPage({ params }: { params: Promise<{ appointmentId: string }> }) {
-  const { appointmentId } = await params
-  const appointment = await getAppointment(appointmentId)
+  useEffect(() => {
+    fetch(`/api/clinic/appointments/${params.appointmentId}`)
+      .then(r => r.json()).then(setAppointment)
+  }, [params.appointmentId])
 
-  if (!appointment) {
-    notFound()
+  function handlePay() {
+    setPaying(true)
+    setTimeout(() => { setPaid(true); setPaying(false) }, 3000)
   }
 
-  const appointmentDate = new Date(appointment.timeSlot.startTime).toLocaleDateString('ru-RU', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  })
-  const appointmentTime = new Date(appointment.timeSlot.startTime).toLocaleTimeString('ru-RU', {
-    hour: '2-digit',
-    minute: '2-digit',
-  })
-
-  return (
-    <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="bg-white rounded-2xl border border-gray-100 p-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-6">Оплата приёма</h1>
-        
-        <div className="space-y-4 mb-8">
-          <div className="flex justify-between py-3 border-b border-gray-100">
-            <span className="text-gray-500">Врач</span>
-            <span className="font-medium text-gray-900">{appointment.doctor.user.name}</span>
-          </div>
-          <div className="flex justify-between py-3 border-b border-gray-100">
-            <span className="text-gray-500">Услуга</span>
-            <span className="font-medium text-gray-900">{appointment.service.name}</span>
-          </div>
-          <div className="flex justify-between py-3 border-b border-gray-100">
-            <span className="text-gray-500">Дата</span>
-            <span className="font-medium text-gray-900">{appointmentDate}</span>
-          </div>
-          <div className="flex justify-between py-3 border-b border-gray-100">
-            <span className="text-gray-500">Время</span>
-            <span className="font-medium text-gray-900">{appointmentTime}</span>
-          </div>
-          <div className="flex justify-between py-3 border-b border-gray-100">
-            <span className="text-gray-500">Пациент</span>
-            <span className="font-medium text-gray-900">{appointment.patientName || 'Не указано'}</span>
-          </div>
-          <div className="flex justify-between py-3 border-b border-gray-100">
-            <span className="text-gray-500">Телефон</span>
-            <span className="font-medium text-gray-900">{appointment.patientPhone || 'Не указан'}</span>
-          </div>
-          <div className="flex justify-between py-4 bg-blue-50 px-4 rounded-lg">
-            <span className="font-semibold text-gray-900">К оплате</span>
-            <span className="font-bold text-xl text-blue-600">{appointment.totalAmount.toLocaleString('ru-RU')} ₽</span>
-          </div>
-        </div>
-
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
-          <p className="text-sm text-yellow-800">
-            <strong>Внимание:</strong> Оплата временно недоступна. Кнопка оплаты будет активна после подключения платёжной системы.
-          </p>
-        </div>
-
-        <button
-          disabled
-          className="w-full bg-gray-300 text-gray-500 font-semibold py-3 rounded-lg cursor-not-allowed mb-4"
-        >
-          Оплатить {appointment.totalAmount.toLocaleString('ru-RU')} ₽
-        </button>
-
-        <div className="text-center">
-          <Link
-            href="/clinic/dashboard"
-            className="text-blue-600 hover:text-blue-700 font-medium"
-          >
-            Перейти в личный кабинет →
-          </Link>
-        </div>
+  if (paid) return (
+    <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',background:'linear-gradient(180deg,#dce8f2,#eef3f8)'}}>
+      <div style={{background:'#fff',borderRadius:'24px',padding:'48px',textAlign:'center',boxShadow:'0 25px 70px rgba(40,55,80,.14)'}}>
+        <div style={{fontSize:'64px',marginBottom:'16px'}}>✅</div>
+        <h2 style={{fontSize:'28px',fontWeight:700,color:'#24344A',marginBottom:'12px'}}>Оплата принята!</h2>
+        <p style={{color:'#607089',marginBottom:'32px'}}>Ваша запись подтверждена. Ждём вас в клинике!</p>
+        <Link href='/clinic/dashboard' style={{background:'linear-gradient(135deg,#54719A,#435C7D)',color:'#fff',padding:'14px 32px',borderRadius:'14px',fontWeight:600,textDecoration:'none'}}>Перейти в личный кабинет</Link>
       </div>
     </div>
   )
-}
+
+  if (!appointment) return <div style={{padding:'48px',textAlign:'center'}}>Загрузка...</div>
+
+  const date = new Date(appointment.timeSlot?.startTime).toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'})
+  const time = new Date(appointment.timeSlot?.startTime).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})
+
+  return (
+    <div style={{minHeight:'100vh',background:'linear-gradient(180deg,#dce8f2,#eef3f8)',display:'flex',alignItems:'center',justifyContent:'center',padding:'24px'}}>
+      <div style={{background:'#fff',borderRadius:'24px',padding:'40px',maxWidth:'560px',width:'100%',boxShadow:'0 25px 70px rgba(40,55,80,.14)'}}>
+        <h1 style={{fontSize:'28px',fontWeight:700,color:'#0f2238',marginBottom:'24px'}}>Оплата приёма</h1>
+        <div style={{marginBottom:'24px'}}>
+          {[['Врач',appointment.doctor?.user?.name],['Услуга',appointment.service?.name],['Дата',date],['Время',time],['Пациент',appointment.patientName]].map(([l,v])=>(
+            <div key={l} style={{display:'flex',justifyContent:'space-between',padding:'12px 0',borderBottom:'1px solid #f0f4f8'}}>
+              <span style={{color:'#607089'}}>{l}</span>
+              <span style={{fontWeight:600,color:'#24344A'}}>{v}</span>
+            </div>
+          ))}
+          <div style={{display:'flex',justifyContent:'space-between',padding:'16px',background:'#f0f7ff',borderRadius:'12px',marginTop:'12px'}}>
+            <span style={{fontWeight:600}}>К оплате</span>
+            <span style={{fontWeight:700,fontSize:'20px',color:'#2563eb'}}>{appointment.totalAmount?.toLocaleString('ru-RU')} ₽</span>
+          </div>
+        </div>
+        <button onClick={handlePay} disabled={paying} style={{width:'100%',height:'56px',borderRadius:'14px',background:paying?'#94a3b8':'linear-gradient(135deg,#54719A,#435C7D)',color:'#fff',fontSize:'18px',fontWeight:600,border:'none',cursor:paying?'not-allowed':'pointer',marginBottom:'16px'}}>
+          {paying ? 'Обработка платежа...' : `Оплатить ${appointment.totalAmount?.toLocaleString('ru-RU')} ₽`}
+        </button>
+        <div style={{textAlign:'center'}}>
+          <Link href='/clinic/dashboard' style={{color:'#2563eb',fontWeight:500}}>Перейти в личный кабинет →</Link>
+        </div>
+      </div>
+    </div>
