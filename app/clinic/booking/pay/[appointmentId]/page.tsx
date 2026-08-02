@@ -11,7 +11,7 @@ export default function PaymentPage({ params }: { params: Promise<{ appointmentI
   const [paid, setPaid] = useState(false)
 
   useEffect(() => {
-    fetch(\/api/clinic/appointments/\)
+    fetch(`/api/clinic/appointments/${appointmentId}`)
       .then(r => r.json()).then(setAppointment)
   }, [appointmentId])
 
@@ -53,7 +53,7 @@ export default function PaymentPage({ params }: { params: Promise<{ appointmentI
           </div>
         </div>
         <button onClick={handlePay} disabled={paying} style={{width:'100%',height:'56px',borderRadius:'14px',background:paying?'#94a3b8':'linear-gradient(135deg,#54719A,#435C7D)',color:'#fff',fontSize:'18px',fontWeight:600,border:'none',cursor:paying?'not-allowed':'pointer',marginBottom:'16px'}}>
-          {paying ? 'Obrabotka...' : \Oplatit \ rub\}
+          {paying ? 'Obrabotka...' : `Oplatit ${appointment.totalAmount?.toLocaleString('ru-RU')} rub`}
         </button>
         <div style={{textAlign:'center'}}>
           <Link href='/clinic/dashboard' style={{color:'#2563eb',fontWeight:500}}>Lichnyj kabinet</Link>
