@@ -10,7 +10,7 @@ type Doctor = {
   id: string
   photoUrl?: string | null
   user: { name: string; email: string }
-  specialization: { name: string }
+  specialization: { name: string; slug: string }
   experienceYears: number
   rating: number
   reviewsCount: number
@@ -22,7 +22,6 @@ export function DoctorsList({ initialDoctors }: { initialDoctors: Doctor[] }) {
   const [specializationSlug, setSpecializationSlug] = useState('')
   const [lightbox, setLightbox] = useState<string | null>(null)
   const [doctors, setDoctors] = useState<Doctor[]>(initialDoctors)
-  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     const spec = searchParams.get('specialization')
@@ -38,18 +37,15 @@ export function DoctorsList({ initialDoctors }: { initialDoctors: Doctor[] }) {
   }, [])
 
   useEffect(() => {
-    if (!search && !specializationSlug) {
-      setDoctors(initialDoctors)
-      return
+    let filtered = initialDoctors
+    if (specializationSlug) {
+      filtered = filtered.filter(d => d.specialization?.slug === specializationSlug)
     }
-    setLoading(true)
-    const params = new URLSearchParams()
-    if (specializationSlug) params.set('specialization', specializationSlug)
-    if (search) params.set('search', search)
-    fetch(`/api/clinic/doctors?${params.toString()}`)
-      .then(r => r.json())
-      .then(data => { setDoctors(data); setLoading(false) })
-      .catch(() => setLoading(false))
+    if (search) {
+      const q = search.toLowerCase()
+      filtered = filtered.filter(d => d.user?.name?.toLowerCase().includes(q))
+    }
+    setDoctors(filtered)
   }, [search, specializationSlug, initialDoctors])
 
   const { data: specializations, isLoading: loadingSpecs } = useSpecializations()
@@ -116,17 +112,7 @@ export function DoctorsList({ initialDoctors }: { initialDoctors: Doctor[] }) {
         </select>
       </div>
 
-      {loading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="rounded-xl p-6 animate-pulse" style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)'}}>
-              <div className="w-full h-64 rounded-2xl mb-4" style={{background:'rgba(255,255,255,0.08)'}} />
-              <div className="h-4 rounded w-3/4 mb-2" style={{background:'rgba(255,255,255,0.08)'}} />
-              <div className="h-3 rounded w-1/2" style={{background:'rgba(255,255,255,0.08)'}} />
-            </div>
-          ))}
-        </div>
-      ) : doctors?.length === 0 ? (
+      {doctors?.length === 0 ? (
         <div className="text-center py-16">
           <p className="text-lg" style={{color:'rgba(234,240,246,0.7)'}}>Врачи не найдены</p>
           <p className="text-sm mt-1" style={{color:'rgba(234,240,246,0.5)'}}>Попробуйте изменить параметры поиска</p>
