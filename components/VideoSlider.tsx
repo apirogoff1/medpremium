@@ -1,6 +1,5 @@
-﻿'use client'
-
-import { useState, useEffect } from 'react'
+'use client'
+import { useState, useEffect, useRef } from 'react'
 
 const VIDEOS = [
   '/videos/video1.mp4',
@@ -12,32 +11,46 @@ const VIDEOS = [
 
 export default function VideoSlider() {
   const [current, setCurrent] = useState(0)
-  const [fading, setFading] = useState(false)
+  const [next, setNext] = useState(1)
+  const [transitioning, setTransitioning] = useState(false)
+  const currentRef = useRef<HTMLVideoElement>(null)
+  const nextRef = useRef<HTMLVideoElement>(null)
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setFading(true)
+      setTransitioning(true)
       setTimeout(() => {
-        setCurrent(prev => (prev + 1) % VIDEOS.length)
-        setFading(false)
-      }, 800)
+        setCurrent(next)
+        setNext((next + 1) % VIDEOS.length)
+        setTransitioning(false)
+      }, 1500)
     }, 6000)
     return () => clearInterval(interval)
-  }, [])
+  }, [next])
 
   return (
     <div className="absolute inset-0 overflow-hidden">
       <video
-        key={current}
+        ref={currentRef}
         src={VIDEOS[current]}
         autoPlay
         muted
         loop
         playsInline
         className="absolute inset-0 w-full h-full object-cover"
-        style={{ opacity: fading ? 0 : 1, transition: 'opacity 2s ease' }}
+        style={{ opacity: transitioning ? 0 : 1, transition: 'opacity 1.5s ease', zIndex: 1 }}
       />
-      <div className="absolute inset-0" style={{background: "rgba(55,60,68,0.72)"}} />
+      <video
+        ref={nextRef}
+        src={VIDEOS[next]}
+        autoPlay
+        muted
+        loop
+        playsInline
+        className="absolute inset-0 w-full h-full object-cover"
+        style={{ opacity: transitioning ? 1 : 0, transition: 'opacity 1.5s ease', zIndex: 2 }}
+      />
+      <div className="absolute inset-0" style={{background: 'rgba(55,60,68,0.72)', zIndex: 3}} />
     </div>
   )
 }

@@ -1,68 +1,61 @@
-content = '''import { prisma } from '@/shared/lib/prisma'
+content = """'use client'
+import { useState, useEffect, useRef } from 'react'
 
-const WORK_START_HOUR = 9
-const WORK_END_HOUR = 18
-const SLOT_MINUTES = 30
-const HORIZON_DAYS = 30
+const VIDEOS = [
+  '/videos/video1.mp4',
+  '/videos/video2.mp4',
+  '/videos/video3.mp4',
+  '/videos/video4.mp4',
+  '/videos/video5.mp4',
+]
 
-export async function ensureFutureSlots(doctorId: string) {
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
+export default function VideoSlider() {
+  const [current, setCurrent] = useState(0)
+  const [next, setNext] = useState(1)
+  const [transitioning, setTransitioning] = useState(false)
+  const currentRef = useRef<HTMLVideoElement>(null)
+  const nextRef = useRef<HTMLVideoElement>(null)
 
-  const generateUntil = new Date(today)
-  generateUntil.setDate(generateUntil.getDate() + HORIZON_DAYS)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTransitioning(true)
+      setTimeout(() => {
+        setCurrent(next)
+        setNext((next + 1) % VIDEOS.length)
+        setTransitioning(false)
+      }, 1500)
+    }, 6000)
+    return () => clearInterval(interval)
+  }, [next])
 
-  const lastSlot = await prisma.timeSlot.findFirst({
-    where: { doctorId },
-    orderBy: { startTime: 'desc' },
-  })
-
-  const generateFrom = lastSlot
-    ? new Date(lastSlot.startTime)
-    : new Date(today)
-
-  generateFrom.setHours(0, 0, 0, 0)
-
-  if (lastSlot) {
-    generateFrom.setDate(generateFrom.getDate() + 1)
-  }
-
-  if (generateFrom > generateUntil) {
-    return
-  }
-
-  const newSlots: { doctorId: string; startTime: Date; endTime: Date; status: 'AVAILABLE' }[] = []
-
-  for (
-    const date = new Date(generateFrom);
-    date <= generateUntil;
-    date.setDate(date.getDate() + 1)
-  ) {
-    const dow = date.getDay()
-    if (dow === 0 || dow === 6) continue
-
-    for (let hour = WORK_START_HOUR; hour < WORK_END_HOUR; hour++) {
-      for (let min = 0; min < 60; min += SLOT_MINUTES) {
-        const start = new Date(date)
-        start.setHours(hour, min, 0, 0)
-        const end = new Date(start)
-        end.setMinutes(end.getMinutes() + SLOT_MINUTES)
-        newSlots.push({
-          doctorId,
-          startTime: start,
-          endTime: end,
-          status: 'AVAILABLE',
-        })
-      }
-    }
-  }
-
-  if (newSlots.length > 0) {
-    await prisma.timeSlot.createMany({ data: newSlots })
-  }
+  return (
+    <div className="absolute inset-0 overflow-hidden">
+      <video
+        ref={currentRef}
+        src={VIDEOS[current]}
+        autoPlay
+        muted
+        loop
+        playsInline
+        className="absolute inset-0 w-full h-full object-cover"
+        style={{ opacity: transitioning ? 0 : 1, transition: 'opacity 1.5s ease', zIndex: 1 }}
+      />
+      <video
+        ref={nextRef}
+        src={VIDEOS[next]}
+        autoPlay
+        muted
+        loop
+        playsInline
+        className="absolute inset-0 w-full h-full object-cover"
+        style={{ opacity: transitioning ? 1 : 0, transition: 'opacity 1.5s ease', zIndex: 2 }}
+      />
+      <div className="absolute inset-0" style={{background: 'rgba(55,60,68,0.72)', zIndex: 3}} />
+    </div>
+  )
 }
-'''
+"""
 
-with open(r'C:\Users\raund\Desktop\portfolio\Medpremium\features\clinic\model\slotGenerator.ts', 'w', encoding='utf-8') as f:
+with open(r'C:\Users\raund\Desktop\portfolio\Medpremium\components\VideoSlider.tsx', 'w', encoding='utf-8') as f:
     f.write(content)
 print('OK')
