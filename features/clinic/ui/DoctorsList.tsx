@@ -8,7 +8,7 @@ import { getProcessedPhoto } from '@/shared/utils'
 
 type Doctor = {
   id: string
-  photoUrl?: string
+  photoUrl?: string | null
   user: { name: string; email: string }
   specialization: { name: string }
   experienceYears: number
