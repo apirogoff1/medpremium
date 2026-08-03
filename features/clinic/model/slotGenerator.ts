@@ -4,34 +4,32 @@ const WORK_START_HOUR = 9
 const WORK_END_HOUR = 18
 const SLOT_MINUTES = 30
 const HORIZON_DAYS = 30
-const MIN_BUFFER_DAYS = 14
 
 export async function ensureFutureSlots(doctorId: string) {
   const today = new Date()
   today.setHours(0, 0, 0, 0)
+
+  const generateUntil = new Date(today)
+  generateUntil.setDate(generateUntil.getDate() + HORIZON_DAYS)
 
   const lastSlot = await prisma.timeSlot.findFirst({
     where: { doctorId },
     orderBy: { startTime: 'desc' },
   })
 
-  const bufferThreshold = new Date(today)
-  bufferThreshold.setDate(bufferThreshold.getDate() + MIN_BUFFER_DAYS)
-
-  if (lastSlot && lastSlot.startTime >= bufferThreshold) {
-    return
-  }
-
   const generateFrom = lastSlot
     ? new Date(lastSlot.startTime)
     : new Date(today)
+
   generateFrom.setHours(0, 0, 0, 0)
+
   if (lastSlot) {
     generateFrom.setDate(generateFrom.getDate() + 1)
   }
 
-  const generateUntil = new Date(today)
-  generateUntil.setDate(generateUntil.getDate() + HORIZON_DAYS)
+  if (generateFrom > generateUntil) {
+    return
+  }
 
   const newSlots: { doctorId: string; startTime: Date; endTime: Date; status: 'AVAILABLE' }[] = []
 
@@ -49,7 +47,6 @@ export async function ensureFutureSlots(doctorId: string) {
         start.setHours(hour, min, 0, 0)
         const end = new Date(start)
         end.setMinutes(end.getMinutes() + SLOT_MINUTES)
-
         newSlots.push({
           doctorId,
           startTime: start,
