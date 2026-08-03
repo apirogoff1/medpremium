@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
 import { DoctorsList } from '@/features/clinic/ui/DoctorsList'
+import { prisma } from '@/shared/lib/prisma'
+
 export const metadata: Metadata = {
   title: 'Врачи',
   description: 'Все врачи клиники МедПремиум. 25 специалистов высшей категории. Выберите врача и запишитесь онлайн.',
@@ -10,7 +12,17 @@ export const metadata: Metadata = {
     url: '/clinic/doctors',
   },
 }
-export default function DoctorsPage() {
+
+export default async function DoctorsPage() {
+  const doctors = await prisma.doctor.findMany({
+    include: {
+      user: { select: { name: true, email: true } },
+      specialization: true,
+      services: true,
+    },
+    orderBy: { rating: 'desc' },
+  })
+
   return (
     <div style={{background:'linear-gradient(180deg,#b8c8d8 0%,#ccdae8 100%)',minHeight:'100vh'}}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -20,7 +32,9 @@ export default function DoctorsPage() {
             25 специалистов высшей категории. Выберите врача и запишитесь онлайн.
           </p>
         </div>
-        <Suspense fallback={<div>Loading...</div>}><DoctorsList /></Suspense>
+        <Suspense fallback={<div>Загрузка...</div>}>
+          <DoctorsList initialDoctors={doctors} />
+        </Suspense>
       </div>
     </div>
   )

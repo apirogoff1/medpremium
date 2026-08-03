@@ -3,14 +3,26 @@ import { useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { useDoctors, useSpecializations } from '../api'
+import { useSpecializations } from '../api'
 import { getProcessedPhoto } from '@/shared/utils'
 
-export function DoctorsList() {
+type Doctor = {
+  id: string
+  photoUrl?: string
+  user: { name: string; email: string }
+  specialization: { name: string }
+  experienceYears: number
+  rating: number
+  reviewsCount: number
+}
+
+export function DoctorsList({ initialDoctors }: { initialDoctors: Doctor[] }) {
   const searchParams = useSearchParams()
   const [search, setSearch] = useState('')
   const [specializationSlug, setSpecializationSlug] = useState('')
   const [lightbox, setLightbox] = useState<string | null>(null)
+  const [doctors, setDoctors] = useState<Doctor[]>(initialDoctors)
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     const spec = searchParams.get('specialization')
@@ -25,10 +37,20 @@ export function DoctorsList() {
     return () => window.removeEventListener('keydown', handler)
   }, [])
 
-  const { data: doctors, isLoading: loadingDoctors } = useDoctors({
-    search: search || undefined,
-    specializationSlug: specializationSlug || undefined,
-  })
+  useEffect(() => {
+    if (!search && !specializationSlug) {
+      setDoctors(initialDoctors)
+      return
+    }
+    setLoading(true)
+    const params = new URLSearchParams()
+    if (specializationSlug) params.set('specialization', specializationSlug)
+    if (search) params.set('search', search)
+    fetch(`/api/clinic/doctors?${params.toString()}`)
+      .then(r => r.json())
+      .then(data => { setDoctors(data); setLoading(false) })
+      .catch(() => setLoading(false))
+  }, [search, specializationSlug, initialDoctors])
 
   const { data: specializations, isLoading: loadingSpecs } = useSpecializations()
 
@@ -94,11 +116,11 @@ export function DoctorsList() {
         </select>
       </div>
 
-      {loadingDoctors ? (
+      {loading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className="rounded-xl p-6 animate-pulse" style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)'}}>
-              <div className="w-16 h-16 rounded-full mb-4" style={{background:'rgba(255,255,255,0.08)'}} />
+              <div className="w-full h-64 rounded-2xl mb-4" style={{background:'rgba(255,255,255,0.08)'}} />
               <div className="h-4 rounded w-3/4 mb-2" style={{background:'rgba(255,255,255,0.08)'}} />
               <div className="h-3 rounded w-1/2" style={{background:'rgba(255,255,255,0.08)'}} />
             </div>
@@ -111,15 +133,7 @@ export function DoctorsList() {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {doctors?.map((doctor: {
-            id: string
-            photoUrl?: string
-            user: { name: string; email: string }
-            specialization: { name: string }
-            experienceYears: number
-            rating: number
-            reviewsCount: number
-          }) => {
+          {doctors?.map((doctor, index) => {
             const portraitUrl = getProcessedPhoto(doctor.photoUrl, 'portrait')
             return (
               <Link
@@ -167,6 +181,7 @@ export function DoctorsList() {
                       height={1200}
                       className="w-full h-full object-cover object-top"
                       style={{filter:'contrast(1.05) saturate(0.97) brightness(0.98)'}}
+                      priority={index < 6}
                     />
                   ) : (
                     <span className="text-2xl font-bold" style={{color:'#21A0E1'}}>
@@ -192,5 +207,3 @@ export function DoctorsList() {
     </div>
   )
 }
-
-
