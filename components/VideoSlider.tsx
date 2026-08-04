@@ -18,7 +18,7 @@ export default function VideoSlider() {
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([])
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const containerRef = useRef<HTMLDivElement | null>(null)
-  const rafRef = useRef<ReturnType<typeof setTimeout> | number>(0)
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   // Подгоняем размер canvas под контейнер
   useEffect(() => {
@@ -35,9 +35,11 @@ export default function VideoSlider() {
     return () => ro.disconnect()
   }, [])
 
-  // Рисуем видео на canvas через requestAnimationFrame
+  // Рисуем видео на canvas ~30fps
   useEffect(() => {
+    let active = true
     const draw = () => {
+      if (!active) return
       const canvas = canvasRef.current
       const video = videoRefs.current[current]
       if (canvas && video && video.readyState >= 2) {
@@ -47,7 +49,6 @@ export default function VideoSlider() {
           const ch = canvas.height
           const vw = video.videoWidth
           const vh = video.videoHeight
-          // object-cover: масштаб чтобы заполнить canvas сохраняя пропорции
           const scale = Math.max(cw / vw, ch / vh)
           const dw = vw * scale
           const dh = vh * scale
@@ -56,10 +57,13 @@ export default function VideoSlider() {
           ctx.drawImage(video, dx, dy, dw, dh)
         }
       }
-      rafRef.current = setTimeout(() => requestAnimationFrame(draw), 33)
+      timerRef.current = setTimeout(draw, 33)
     }
-    rafRef.current = setTimeout(() => requestAnimationFrame(draw), 33)
-    return () => { cancelAnimationFrame(rafRef.current); clearTimeout(rafRef.current) }
+    draw()
+    return () => {
+      active = false
+      if (timerRef.current) clearTimeout(timerRef.current)
+    }
   }, [current])
 
   // Запуск первого видео
