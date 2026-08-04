@@ -18,7 +18,7 @@ export default function VideoSlider() {
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([])
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const containerRef = useRef<HTMLDivElement | null>(null)
-  const rafRef = useRef<number>(0)
+  const rafRef = useRef<ReturnType<typeof setTimeout> | number>(0)
 
   // Подгоняем размер canvas под контейнер
   useEffect(() => {
