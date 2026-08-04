@@ -14,18 +14,22 @@ const FADE_DURATION = 2000
 
 export default function VideoSlider() {
   const [current, setCurrent] = useState(0)
+  const [ready, setReady] = useState(false)
   const refs = useRef<(HTMLVideoElement | null)[]>([])
 
   useEffect(() => {
-    // Играем только первое видео
-    if (refs.current[0]) refs.current[0].play().catch(() => {})
+    const first = refs.current[0]
+    if (!first) return
+    first.play().catch(() => {})
+    const onCanPlay = () => setReady(true)
+    first.addEventListener('canplay', onCanPlay)
+    return () => first.removeEventListener('canplay', onCanPlay)
   }, [])
 
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrent((c) => {
         const next = (c + 1) % VIDEOS.length
-        // Перематываем следующее на начало и запускаем
         const nextVideo = refs.current[next]
         if (nextVideo) {
           nextVideo.currentTime = 0
@@ -39,6 +43,13 @@ export default function VideoSlider() {
 
   return (
     <div className="absolute inset-0 overflow-hidden">
+      {/* Постер — виден пока первое видео не загрузилось */}
+      <img
+        src="/videos/poster.jpg"
+        alt=""
+        className="absolute inset-0 w-full h-full object-cover"
+        style={{ zIndex: 0 }}
+      />
       {VIDEOS.map((src, i) => (
         <video
           key={src}
@@ -50,7 +61,7 @@ export default function VideoSlider() {
           preload="auto"
           className="absolute inset-0 w-full h-full object-cover"
           style={{
-            opacity: i === current ? 1 : 0,
+            opacity: i === current ? (ready ? 1 : 0) : 0,
             transition: `opacity ${FADE_DURATION}ms ease-in-out`,
             zIndex: i === current ? 2 : 1,
             willChange: 'opacity',
