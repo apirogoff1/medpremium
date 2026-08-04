@@ -11,46 +11,50 @@ const VIDEOS = [
 
 export default function VideoSlider() {
   const [current, setCurrent] = useState(0)
-  const [next, setNext] = useState(1)
   const [transitioning, setTransitioning] = useState(false)
-  const currentRef = useRef<HTMLVideoElement>(null)
-  const nextRef = useRef<HTMLVideoElement>(null)
+  const refs = useRef<(HTMLVideoElement | null)[]>([null, null, null, null, null])
+
+  useEffect(() => {
+    // Preload all videos
+    refs.current.forEach((v) => {
+      if (v) {
+        v.load()
+        v.play().catch(() => {})
+      }
+    })
+  }, [])
 
   useEffect(() => {
     const interval = setInterval(() => {
       setTransitioning(true)
       setTimeout(() => {
-        setCurrent(next)
-        setNext((next + 1) % VIDEOS.length)
+        setCurrent((prev) => (prev + 1) % VIDEOS.length)
         setTransitioning(false)
-      }, 1500)
+      }, 1000)
     }, 6000)
     return () => clearInterval(interval)
-  }, [next])
+  }, [])
 
   return (
     <div className="absolute inset-0 overflow-hidden">
-      <video
-        ref={currentRef}
-        src={VIDEOS[current]}
-        autoPlay
-        muted
-        loop
-        playsInline
-        className="absolute inset-0 w-full h-full object-cover"
-        style={{ opacity: transitioning ? 0 : 1, transition: 'opacity 1.5s ease', zIndex: 1 }}
-      />
-      <video
-        ref={nextRef}
-        src={VIDEOS[next]}
-        autoPlay
-        muted
-        loop
-        playsInline
-        className="absolute inset-0 w-full h-full object-cover"
-        style={{ opacity: transitioning ? 1 : 0, transition: 'opacity 1.5s ease', zIndex: 2 }}
-      />
-      <div className="absolute inset-0" style={{background: 'rgba(55,60,68,0.72)', zIndex: 3}} />
+      {VIDEOS.map((src, i) => (
+        <video
+          key={src}
+          ref={(el) => { refs.current[i] = el }}
+          src={src}
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+          style={{
+            opacity: i === current ? (transitioning ? 0 : 1) : 0,
+            transition: 'opacity 1s ease',
+            zIndex: i === current ? 1 : 0,
+          }}
+        />
+      ))}
+      <div className="absolute inset-0" style={{background: 'rgba(55,60,68,0.72)', zIndex: 10}} />
     </div>
   )
 }
