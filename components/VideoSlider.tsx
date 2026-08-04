@@ -122,7 +122,7 @@ export default function VideoSlider() {
       />
       <div
         className="absolute inset-0"
-        style={{ background: 'rgba(55,60,68,0.72)', zIndex: 10 }}
+        style={{ background: 'rgba(55,60,68,0.60)', zIndex: 10 }}
       />
     </div>
   )
