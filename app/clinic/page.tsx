@@ -128,7 +128,7 @@ export default async function ClinicPage() {
           <div className="grid grid-cols-4 gap-6">
             {QUALITY_CARDS.map((card) => (
               <div key={card.title} className="quality-card">
-                <img src={card.img} alt={card.title} style={{width:'100%',height:'300px',objectFit:'cover',display:'block'}} />
+                <img src={card.img} alt={card.title} loading='eager' fetchPriority='high' style={{width:'100%',height:'300px',objectFit:'cover',display:'block'}} />
                 <div style={{padding:'24px'}}>
                   <h3 style={{fontSize:'18px',fontWeight:700,color:'#2d3540',marginBottom:'10px'}}>{card.title}</h3>
                   <p style={{fontSize:'16px',lineHeight:1.7,color:'#0a0e14',fontWeight:400,margin:0}}>{card.desc}</p>
