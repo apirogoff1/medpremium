@@ -9,10 +9,12 @@ const VIDEOS = [
   '/videos/video5.mp4',
 ]
 
+const SHOW_DURATION = 10000
+const FADE_DURATION = 2000
+
 export default function VideoSlider() {
   const [current, setCurrent] = useState(0)
-  const [prev, setPrev] = useState<number | null>(null)
-  const refs = useRef<(HTMLVideoElement | null)[]>([null, null, null, null, null])
+  const refs = useRef<(HTMLVideoElement | null)[]>([])
 
   useEffect(() => {
     refs.current.forEach((v) => {
@@ -22,45 +24,33 @@ export default function VideoSlider() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrent((c) => {
-        setPrev(c)
-        return (c + 1) % VIDEOS.length
-      })
-    }, 6000)
+      setCurrent((c) => (c + 1) % VIDEOS.length)
+    }, SHOW_DURATION)
     return () => clearInterval(interval)
   }, [])
 
-  useEffect(() => {
-    if (prev === null) return
-    const timer = setTimeout(() => setPrev(null), 1500)
-    return () => clearTimeout(timer)
-  }, [prev])
-
   return (
     <div className="absolute inset-0 overflow-hidden">
-      {VIDEOS.map((src, i) => {
-        const isCurrent = i === current
-        const isPrev = i === prev
-        if (!isCurrent && !isPrev) return null
-        return (
-          <video
-            key={src}
-            ref={(el) => { refs.current[i] = el }}
-            src={src}
-            autoPlay
-            muted
-            loop
-            playsInline
-            className="absolute inset-0 w-full h-full object-cover"
-            style={{
-              opacity: isCurrent ? 1 : 0,
-              transition: 'opacity 1.5s ease-in-out',
-              zIndex: isCurrent ? 2 : 1,
-            }}
-          />
-        )
-      })}
-      <div className="absolute inset-0" style={{background: 'rgba(55,60,68,0.72)', zIndex: 10}} />
+      {VIDEOS.map((src, i) => (
+        <video
+          key={src}
+          ref={(el) => { refs.current[i] = el }}
+          src={src}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          className="absolute inset-0 w-full h-full object-cover"
+          style={{
+            opacity: i === current ? 1 : 0,
+            transition: `opacity ${FADE_DURATION}ms ease-in-out`,
+            zIndex: i === current ? 2 : 1,
+            willChange: 'opacity',
+          }}
+        />
+      ))}
+      <div className="absolute inset-0" style={{ background: 'rgba(55,60,68,0.72)', zIndex: 10 }} />
     </div>
   )
 }
