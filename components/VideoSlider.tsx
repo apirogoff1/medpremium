@@ -56,10 +56,10 @@ export default function VideoSlider() {
           ctx.drawImage(video, dx, dy, dw, dh)
         }
       }
-      rafRef.current = requestAnimationFrame(draw)
+      rafRef.current = setTimeout(() => requestAnimationFrame(draw), 33)
     }
-    rafRef.current = requestAnimationFrame(draw)
-    return () => cancelAnimationFrame(rafRef.current)
+    rafRef.current = setTimeout(() => requestAnimationFrame(draw), 33)
+    return () => { cancelAnimationFrame(rafRef.current); clearTimeout(rafRef.current) }
   }, [current])
 
   // Запуск первого видео
