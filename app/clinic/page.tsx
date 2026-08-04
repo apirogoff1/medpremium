@@ -54,7 +54,12 @@ export default async function ClinicPage() {
   const doctors = await getTopDoctors()
 
   return (
-    <>      {/* Верхний поворот головы */}
+    <>
+      <link rel="preload" as="image" href="/photos/quality/doctor-1.jpg" />
+      <link rel="preload" as="image" href="/photos/quality/equipment-1.jpg" />
+      <link rel="preload" as="image" href="/photos/quality/patient-1.jpg" />
+      <link rel="preload" as="image" href="/photos/quality/reception-1.jpg" />
+      {/* Верхний поворот головы */}
       <div style={{height:'96px',background:'linear-gradient(90deg,rgba(143,166,192,0.95) 0%,rgba(159,184,214,0.95) 45%,rgba(183,210,234,0.95) 100%)',display:'flex',alignItems:'center',justifyContent:'space-between',position:'relative',zIndex:10,overflow:'hidden'}}>
         <img src="/photos/interior/interior-1.jpg" alt="" style={{position:'absolute',left:0,top:0,height:'100%',width:'25%',objectFit:'cover',objectPosition:'center',WebkitMaskImage:'linear-gradient(90deg,black 10%,transparent 90%)',maskImage:'linear-gradient(90deg,black 10%,transparent 90%)',filter:'brightness(0.6) grayscale(0.7) hue-rotate(210deg) saturate(2)'}} />
         <div style={{display:'flex',alignItems:'center',gap:'12px',position:'relative',zIndex:1,paddingLeft:'300px'}}>
