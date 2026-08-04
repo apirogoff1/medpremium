@@ -17,14 +17,22 @@ export default function VideoSlider() {
   const refs = useRef<(HTMLVideoElement | null)[]>([])
 
   useEffect(() => {
-    refs.current.forEach((v) => {
-      if (v) v.play().catch(() => {})
-    })
+    // Играем только первое видео
+    if (refs.current[0]) refs.current[0].play().catch(() => {})
   }, [])
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrent((c) => (c + 1) % VIDEOS.length)
+      setCurrent((c) => {
+        const next = (c + 1) % VIDEOS.length
+        // Перематываем следующее на начало и запускаем
+        const nextVideo = refs.current[next]
+        if (nextVideo) {
+          nextVideo.currentTime = 0
+          nextVideo.play().catch(() => {})
+        }
+        return next
+      })
     }, SHOW_DURATION)
     return () => clearInterval(interval)
   }, [])
@@ -36,7 +44,6 @@ export default function VideoSlider() {
           key={src}
           ref={(el) => { refs.current[i] = el }}
           src={src}
-          autoPlay
           muted
           loop
           playsInline
