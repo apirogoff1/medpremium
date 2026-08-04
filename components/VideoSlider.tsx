@@ -44,7 +44,7 @@ export default function VideoSlider() {
   return (
     <div
       className="absolute inset-0 overflow-hidden"
-      style={{ transform: 'translateZ(0)', backfaceVisibility: 'hidden' }}
+      style={{ transform: 'translateZ(0)', backfaceVisibility: 'hidden', isolation: 'isolate', contain: 'strict' }}
     >
       <img
         src="/videos/poster.jpg"
