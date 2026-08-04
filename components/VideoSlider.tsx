@@ -44,13 +44,13 @@ export default function VideoSlider() {
   return (
     <div
       className="absolute inset-0 overflow-hidden"
-      style={{ transform: 'translateZ(0)', backfaceVisibility: 'hidden', isolation: 'isolate', contain: 'strict' }}
+      style={{ transform: 'translate3d(0,0,0)' }}
     >
       <img
         src="/videos/poster.jpg"
         alt=""
         className="absolute inset-0 w-full h-full object-cover"
-        style={{ zIndex: 0, transform: 'translateZ(0)' }}
+        style={{ zIndex: 0 }}
       />
       {VIDEOS.map((src, i) => (
         <video
@@ -66,15 +66,13 @@ export default function VideoSlider() {
             opacity: i === current ? (ready ? 1 : 0) : 0,
             transition: `opacity ${FADE_DURATION}ms ease-in-out`,
             zIndex: i === current ? 2 : 1,
-            transform: 'translateZ(0)',
-            backfaceVisibility: 'hidden',
-            willChange: 'opacity, transform',
+            transform: 'translate3d(0,0,0)',
           }}
         />
       ))}
       <div
         className="absolute inset-0"
-        style={{ background: 'rgba(55,60,68,0.72)', zIndex: 10, transform: 'translateZ(0)' }}
+        style={{ background: 'rgba(55,60,68,0.72)', zIndex: 10 }}
       />
     </div>
   )
