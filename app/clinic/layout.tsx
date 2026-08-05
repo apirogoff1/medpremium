@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import ContactWidget from '@/components/ContactWidget'
+import ClinicHeader from '@/components/landing/ClinicHeader'
 
 export const metadata: Metadata = {
   title: {
@@ -23,26 +24,7 @@ export default function ClinicLayout({
 }) {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-start gap-36 h-16">
-            <Link href="/clinic" className="flex items-center gap-2">
-              <div className="w-9 h-9 bg-gradient-to-br from-blue-600 to-teal-500 rounded-lg flex items-center justify-center shadow-sm">
-                <span className="text-white text-sm font-bold">М</span>
-              </div>
-              <span className="text-xl font-bold text-gray-900">МедПремиум</span>
-            </Link>
-            <nav className="hidden md:flex items-center gap-6">
-              <Link href="/clinic/doctors" className="text-sm font-medium hover:text-blue-500 transition-colors" style={{color:"#1e3a5f",fontWeight:500,letterSpacing:"0.01em"}}>Врачи</Link>
-              <Link href="/clinic/services" className="text-sm font-medium hover:text-blue-500 transition-colors" style={{color:"#1e3a5f",fontWeight:500,letterSpacing:"0.01em"}}>Услуги</Link>
-              <Link href="/clinic/about" className="text-sm font-medium hover:text-blue-500 transition-colors" style={{color:"#1e3a5f",fontWeight:500,letterSpacing:"0.01em"}}>О клинике</Link>
-              <Link href="/clinic/contacts" className="text-sm font-medium hover:text-blue-500 transition-colors" style={{color:"#1e3a5f",fontWeight:500,letterSpacing:"0.01em"}}>Контакты</Link>
-              <Link href="/clinic/booking" className="text-sm font-medium hover:text-blue-500 transition-colors" style={{color:"#1e3a5f",fontWeight:500,letterSpacing:"0.01em"}}>Запись онлайн</Link>
-              <Link href="/clinic/dashboard" className="text-sm font-medium hover:text-blue-500 transition-colors" style={{color:"#1e3a5f",fontWeight:500,letterSpacing:"0.01em"}}>Личный кабинет</Link>
-            </nav>
-          </div>
-        </div>
-      </header>
+      <ClinicHeader />
       <main className="flex-1">
         {children}
       </main>

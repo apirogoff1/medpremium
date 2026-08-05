@@ -130,7 +130,7 @@ export default async function ClinicPage() {
             .quality-card img { filter:brightness(0.7) saturate(0.8); transition:filter 0.5s ease; }
             .quality-card:hover img { filter:brightness(1) saturate(1); }
           `}</style>
-          <div className="grid grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {QUALITY_CARDS.map((card) => (
               <div key={card.title} className="quality-card">
                 <img src={card.img} alt={card.title} loading='eager' fetchPriority='high' style={{width:'100%',height:'300px',objectFit:'cover',display:'block'}} />
@@ -149,7 +149,7 @@ export default async function ClinicPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" style={{position:'relative',zIndex:1}}>
           <h2 className="text-center mb-4" style={{fontSize:'36px',fontWeight:700,color:'#fff',fontFamily:'var(--font-playfair)',position:'relative',zIndex:1}}>Медицинские направления</h2>
           <p className="text-center mb-14" style={{color:'rgba(255,255,255,0.97)',fontSize:'18px',position:'relative',zIndex:1}}>Широкий спектр медицинских услуг для диагностики, лечения и профилактики заболеваний.</p>
-          <div className="grid grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <style>{`
             .spec-card { position:relative; padding:24px 28px; border-radius:20px; background:rgba(100,130,170,0.28); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border:1px solid rgba(150,170,200,0.15); text-decoration:none; display:flex; flex-direction:column; transition:all 0.3s ease; min-height:auto; overflow:hidden; }
             

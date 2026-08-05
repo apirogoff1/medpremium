@@ -1,14 +1,14 @@
-content = open(r'app/layout.tsx', encoding='utf-8').read()
+content = open(r'app/clinic/page.tsx', encoding='utf-8').read()
 
-old = "import type { Metadata } from 'next'"
-new = "import type { Metadata, Viewport } from 'next'"
+result = content.replace(
+    '<div className="grid grid-cols-4 gap-6">',
+    '<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">'
+)
 
-result = content.replace(old, new)
+result = result.replace(
+    '<div className="grid grid-cols-4 gap-4">',
+    '<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">'
+)
 
-old2 = "export const viewport = {"
-new2 = "export const viewport: Viewport = {"
-
-result = result.replace(old2, new2)
-
-open(r'app/layout.tsx', 'w', encoding='utf-8').write(result)
+open(r'app/clinic/page.tsx', 'w', encoding='utf-8').write(result)
 print("Done")
