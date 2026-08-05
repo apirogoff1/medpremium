@@ -1,4 +1,5 @@
 ﻿import { prisma } from '@/shared/lib/prisma'
+export const dynamic = 'force-dynamic'
 import AdminAppointmentsClient from './client'
 
 export default async function AdminAppointmentsPage() {
