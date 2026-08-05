@@ -115,7 +115,7 @@ export default function AboutPage() {
       <div style={{background:'linear-gradient(135deg,#1a3a5c 0%,#2a4a6b 100%)'}}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
           <h2 style={{fontFamily:'var(--font-playfair)',fontSize:'36px',fontWeight:800,color:'#ffffff',marginBottom:'48px'}}>Наши принципы</h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-x-12 gap-y-10">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-x-12 gap-y-10">
             {PRINCIPLES.map((item) => (
               <div key={item.title} style={{display:'flex',alignItems:'flex-start',gap:'16px'}}>
                 <svg width="40" height="40" viewBox="0 0 48 48" fill="none" stroke="rgba(255,255,255,0.75)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{flexShrink:0}}>

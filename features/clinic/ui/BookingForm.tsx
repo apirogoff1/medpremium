@@ -8,7 +8,7 @@ import { appointmentSchema, type AppointmentDto } from '../model/schemas'
 
 const fieldStyle = {
   width: '100%',
-  height: '48px',
+  height: '56px',
   background: '#F8FAFD',
   border: '1px solid #D9E2EE',
   borderRadius: '14px',
@@ -18,6 +18,7 @@ const fieldStyle = {
   color: '#304156',
   transition: '.25s ease',
   outline: 'none',
+  cursor: 'pointer',
 } as React.CSSProperties
 
 const labelStyle = {
