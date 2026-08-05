@@ -1,11 +1,14 @@
-content = open(r'C:\Users\raund\Desktop\portfolio\Medpremium\components\VideoSlider.tsx', encoding='utf-8').read()
+content = open(r'app/layout.tsx', encoding='utf-8').read()
 
-old = "style={{ transform: 'translateZ(0)', backfaceVisibility: 'hidden' }}"
-new = "style={{ transform: 'translateZ(0)', backfaceVisibility: 'hidden', isolation: 'isolate', contain: 'strict' }}"
+old = "import type { Metadata } from 'next'"
+new = "import type { Metadata, Viewport } from 'next'"
 
 result = content.replace(old, new)
 
-with open(r'C:\Users\raund\Desktop\portfolio\Medpremium\components\VideoSlider.tsx', 'w', encoding='utf-8') as f:
-    f.write(result)
+old2 = "export const viewport = {"
+new2 = "export const viewport: Viewport = {"
 
-print("OK" if old in content else "СТРОКА НЕ НАЙДЕНА")
+result = result.replace(old2, new2)
+
+open(r'app/layout.tsx', 'w', encoding='utf-8').write(result)
+print("Done")

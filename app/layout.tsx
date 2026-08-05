@@ -1,4 +1,4 @@
-﻿import type { Metadata } from 'next'
+﻿import type { Metadata, Viewport } from 'next'
 import { Geist, Geist_Mono, Playfair_Display } from 'next/font/google'
 import { Providers } from './providers'
 import JsonLd from './components/JsonLd'
@@ -17,6 +17,11 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 })
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+}
+
 export const metadata: Metadata = {
   metadataBase: new URL(APP_URL),
   title: {
