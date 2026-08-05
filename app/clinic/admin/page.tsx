@@ -67,7 +67,7 @@ export default async function AdminPage() {
                     a.status === 'CANCELLED' ? 'bg-red-100 text-red-700' :
                     'bg-gray-100 text-gray-700'
                   }`}>
-                    {a.status}
+                    {{"PENDING":"Ожидает","CONFIRMED":"Подтверждена","COMPLETED":"Завершена","CANCELLED":"Отменена","PAID":"Оплачена"}[a.status] || a.status}
                   </span>
                 </td>
                 <td className="py-2">{a.totalAmount} ₽</td>
