@@ -15,10 +15,10 @@ export async function GET(req: NextRequest) {
     await ensureFutureSlots(doctorId)
 
     const startOfDay = new Date(date)
-    startOfDay.setHours(0, 0, 0, 0)
+    startOfDay.setUTCHours(0, 0, 0, 0)
 
     const endOfDay = new Date(date)
-    endOfDay.setHours(23, 59, 59, 999)
+    endOfDay.setUTCHours(23, 59, 59, 999)
 
     const slots = await prisma.timeSlot.findMany({
       where: {
