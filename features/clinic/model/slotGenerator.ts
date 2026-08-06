@@ -3,7 +3,7 @@ import { prisma } from '@/shared/lib/prisma'
 const WORK_START_HOUR = 9
 const WORK_END_HOUR = 18
 const SLOT_MINUTES = 30
-const HORIZON_DAYS = 30
+const HORIZON_DAYS = 35
 
 export async function ensureFutureSlots(doctorId: string) {
   const today = new Date()
